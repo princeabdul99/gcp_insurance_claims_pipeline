@@ -1,0 +1,7 @@
+.venv
+.env
+.astro
+docs.md
+logs/
+keys/
+__pycache__
