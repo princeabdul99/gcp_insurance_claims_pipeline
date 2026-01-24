@@ -9,7 +9,7 @@ from google.cloud import storage
 from google.api_core.exceptions import GoogleAPIError
 
 from dotenv import load_dotenv
-from helper import derive_folder_from_filename
+from plugins.helper import derive_folder_from_filename
 
 load_dotenv()
 
@@ -17,9 +17,7 @@ PROJECT_ID = os.getenv('PROJECT_ID')
 BUCKET_NAME = os.getenv('BUCKET_NAME')
 
 
-def dev_main(params):
-    source_filepath = params.source_filepath
-    base_prefix = "dev"
+def dev_main(source_filepath: str, base_prefix:str = "dev"):
 
     try:
         source_path = Path(source_filepath)
@@ -67,12 +65,12 @@ def dev_main(params):
         raise 
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description="Ingest data to data sources")
 
     parser.add_argument('--source_filepath', help='url of csv/parquet file', required=True)
     args = parser.parse_args()
-    dev_main(args)
-    # dev_main(
-    #     source_filepath='https://raw.githubusercontent.com/princeabdul99/practice-dataset/refs/heads/main/insurance_claims/brokers.csv'
-    # )
+    dev_main(source_filepath=args.source_filepath)    
+
+if __name__ == '__main__':
+    main()

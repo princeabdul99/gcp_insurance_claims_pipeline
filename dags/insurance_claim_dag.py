@@ -2,13 +2,11 @@ import os
 from dotenv import load_dotenv
 from airflow.sdk import dag
 from airflow.providers.standard.operators.python import PythonOperator
-from airflow.providers.standard.operators.bash import BashOperator
 from pendulum import datetime
+from include.ingestion.dev_main import dev_main
+from include.ingestion.bigquery_datasets import create_bq_dataset 
 
 load_dotenv()
-
-
-PATH_TO_DATA_SCRIPT = "/usr/local/airflow/include/ingestion/dev_main.py"
 
 args = {
     'owner': 'abdul-dev'
@@ -20,9 +18,25 @@ GCP_PROJECT_ID = os.getenv('PROJECT_ID')
 
 
 source_path='https://raw.githubusercontent.com/princeabdul99/practice-dataset/refs/heads/main/insurance_claims'
+SOURCE_FILES = [
+    "brokers.csv",
+    "coverages.csv",
+    "participants.csv",
+    "policies.csv",
+    "products.csv",
+    "regions.csv",
+    "state_regions.csv",
+    "claims_announcement.csv",
+    "claims_payment.csv",
+    "claims_reserves.csv",
+]
 
-brokers_data = f'{source_path}/brokers.csv'
-coverages_data = f'{source_path}/coverages.csv'
+SOURCE_FILEPATHS = [f"{source_path}/{file}" for file in SOURCE_FILES]
+
+# Dataset
+dev_datasets = ['ic_dev_bronze', 'ic_dev_silver', 'ic_dev_gold']
+location = 'US'
+
 
 
 @dag(
@@ -34,23 +48,23 @@ coverages_data = f'{source_path}/coverages.csv'
 )
 
 def insurance_claims_pipeline():
-    external_file_to_gcs = BashOperator(
+    external_file_to_gcs = PythonOperator.partial(
         task_id = "external_file_to_gcs",
-        bash_command = f"""
-            python {PATH_TO_DATA_SCRIPT} \
-            --source_filepath "{{{{ dag_run.conf.get('source_filepath', '{brokers_data}') }}}}"
-        """
+        python_callable=dev_main,
+    ).expand(
+        op_kwargs=[{"source_filepath": p} for p in SOURCE_FILEPATHS]
     )
 
-    external_file_to_gcs_cov = BashOperator(
-        task_id = "external_file_to_gcs_cov",
-        bash_command = f"""
-            python {PATH_TO_DATA_SCRIPT} \
-            --source_filepath "{{{{ dag_run.conf.get('source_filepath', '{coverages_data    }') }}}}"
-        """
+    create_datasets = PythonOperator(
+        task_id = "create_datasets",
+        python_callable=create_bq_dataset,
+        op_kwargs={
+           "project_id": GCP_PROJECT_ID,
+           "datasets": dev_datasets, 
+        }
     )
 
-    external_file_to_gcs
-    external_file_to_gcs_cov
+    external_file_to_gcs >> create_datasets
+
 
 insurance_claims_pipeline()    
