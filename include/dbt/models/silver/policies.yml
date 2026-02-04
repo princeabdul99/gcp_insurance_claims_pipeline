@@ -1,0 +1,86 @@
+models:
+  - name: policies
+    description: Policies data with basic cleaning and transformation applied, one row per policy
+    columns:
+      
+      - name: policy_id
+        description: The unique key for each policy.
+        data_type: int64
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: policy_code
+        description: The policy code each policy.
+        data_type: string
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: policy_inception_date
+        description: The policy inception date.
+        data_type: date
+        data_tests:
+          - not_null         
+      
+      - name: cancelation_date
+        description: The policy cancelation date.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: policy_start_date
+        description: The policy start date.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: policy_expiration_date
+        description: The policy expiration date.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: renewal_month
+        description: The policy renewal month.
+        data_type: int64
+        data_tests:
+          - not_null
+      
+      - name: annualized_policy_premium
+        description: The annualized policy premium.
+        data_type: float64
+        data_tests:
+          - not_null
+      
+      - name: policy_status
+        description: The policy status.
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Active', 'Cancelled']
+      
+      - name: customer_id
+        description: The policy customer_id.
+        data_type: int64
+        data_tests:
+          - not_null  
+      
+      - name: broker_id
+        description: The broker id.
+        data_type: int64
+        data_tests:
+          - not_null      
+      
+      - name: insured_id
+        description: The insurer id.
+        data_type: int64
+        data_tests:
+          - not_null                
+      
+      - name: product_id
+        description: The product id.
+        data_type: int64
+        data_tests:
+          - not_null                             

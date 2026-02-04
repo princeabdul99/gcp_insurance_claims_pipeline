@@ -1,0 +1,57 @@
+models:
+  - name: participants
+    description: Participants data with basic cleaning and transformation applied, one row per broker
+    columns:
+      
+      - name: participant_id
+        description: The unique key for each participant.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: participant_code
+        description: The participant code each participant.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: last_name
+        description: The participant last name.
+        data_tests:
+          - not_null         
+      
+      - name: first_name
+        description: The participant first name.
+        data_tests:
+          - not_null
+      
+      - name: birth_date
+        description: The participant birth date.
+        data_tests:
+          - not_null
+      
+      - name: gender
+        description: The participant gender (male, female).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Male', 'Female']
+      
+      - name: participant_type
+        description: The participant type.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Individual']
+      
+      - name: region_id
+        description: The participant region id.
+        data_tests:
+          - not_null
+      
+      - name: marital_status
+        description: The participant marital status (single, married, divorce).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Single', 'Married', 'Divorced']         

@@ -1,0 +1,33 @@
+models:
+  - name: products
+    description: Products data with basic cleaning and transformation applied, one row product
+    columns:
+      
+      - name: product_id
+        description: The unique key for each product.
+        data_type: int64
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: product_category
+        description: The product category for each policy.
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Business', 'Capital Accumulation', 'Health', 'Life', 'Mortgaged', 'Property', 'Motor', 'Family Protection', 'Other']
+      
+      - name: product_sub_category
+        description: The product sub category for each policy
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Outpatient Care', 'Hospital Care', 'Personal Theft', 'Other', 'Other Life', 'Non Mortgaged', 'Mortgaged Property', 'Mortgaged Business', 'Single Premium', 'Periodic Premium', 'Borrower Life Insurance', 'Motor Standard', 'Motor Plus',]        
+      
+      - name: product
+        description: The policy product.
+        data_type: string
+        data_tests:
+          - not_null

@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: ic_bronze
+    database: ecom-pipeline-gcp
+    schema: "{{ target.schema }}_bronze"  # <-- this will be ic_dev_bronze, etc. 
+    description: Insurance claims data for a Fictional Insurance Company
+    tables:
+      - name: brokers
+        description: One record per broker
+      
+      - name: claims_announcement
+        description:  One record per announcement (consisting of one or more claims announcement)      
+      
+      - name: claims_payment
+        description:  One record per payment (consisting of one or more claims payments)        
+      
+      - name: claims_reserves
+        description:  One record per reserve (consisting of one or more claims reserves)         
+      
+      - name: coverages
+        description: One record per coverage         
+      
+      - name: participants
+        description: One record per person who has a policy         
+      
+      - name: policies
+        description:  One record per policy
+      
+      - name: products
+        description:  One record per product            
+      
+      - name: regions
+        description:  One record per region  
+      
+      - name: state_regions
+        description:  One record per state region     

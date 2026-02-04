@@ -1,0 +1,22 @@
+models:
+  - name: state_regions
+    description: State Region data with basic cleaning and transformation applied, one row state_regions.
+    columns:
+      
+      - name: state_code
+        description: The unique key for each state.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: state_name
+        description: The name for each state.
+        data_tests:
+          - not_null
+      
+      - name: state_geo_region
+        description: The geographical region for each state.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['North', 'Northeast', 'East', 'West', 'South', 'Midwest']

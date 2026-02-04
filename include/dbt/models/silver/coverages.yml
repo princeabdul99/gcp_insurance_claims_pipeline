@@ -1,0 +1,64 @@
+models:
+  - name: coverages
+    description: Coverages data with basic cleaning and transformation applied, one row per broker
+    columns:
+      
+      - name: cover_id
+        data_type: int64
+        description: The unique key for each coverage.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: cover_code
+        data_type: string
+        description: The coverage code each coverage.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: renewal_type
+        data_type: string
+        description: The renewal type for each coverage (yearly, whole life).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Yearly Renewable', 'Whole Life', 'N/A']        
+      
+      - name: room
+        data_type: string
+        description: The coverages room (A, B, C, C2).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['A', 'B', 'C', 'C2', 'N/A']
+      
+      - name: participation
+        data_type: int64
+        description: The participation number of each coverages.
+        data_tests:
+          - not_null
+      
+      - name: product_category
+        data_type: string
+        description: The product category for each coverage.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Group', 'Health', 'Group Medical', 'Basic Life', 'Hospitalisation riders', 'Non hospitalisation riders', 'Life Consumer']
+      
+      - name: premium_mode
+        data_type: string
+        description: The mode of each coverage.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Periodic']
+      
+      - name: product_distribution
+        data_type: string
+        description: The distribution of each coverage.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Group', 'Health', 'Other  Life']

@@ -1,0 +1,83 @@
+models:
+  - name: claims_payment
+    description: Claims Payment data with basic cleaning and transformation applied, one row per announcement
+    columns:
+      
+      - name: claim_payment_code
+        description: The claim key for each claim Payment.
+        data_type: string
+        data_tests:
+          - not_null
+      
+      - name: claim_id
+        description: The claim id for each claim Payment.
+        data_type: int64
+        data_tests:
+          - not_null
+      
+      - name: claim_code
+        description: The claim code for each claim Payment.
+        data_type: string
+        data_tests:
+          - not_null
+      
+      - name: policy_id
+        description: The policy id for each claim.
+        data_type: int64
+        data_tests:
+          - not_null         
+      
+      - name: announcement_date
+        description: The date incident was reported.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: event_date
+        description: The date incident occure.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: closing_date
+        description: > 
+          The date payment transaction was completed and closed. 
+          closing_date may be NULL when the process is still in progress.
+        data_type: date
+         
+      
+      - name: cover_id
+        description: The cover id for claim payment.
+        data_type: int64
+        data_tests:
+          - not_null 
+      
+      - name: payment_date
+        description: The payment date for claim.
+        data_type: date
+        data_tests:
+          - not_null 
+      
+      - name: payment_amount
+        description: The payment amount for the claim.
+        data_type: float64
+        data_tests:
+          - not_null                               
+      
+      - name: broker_id
+        description: The broker id.
+        data_type: int64
+        data_tests:
+          - not_null      
+      
+      - name: insured_id
+        description: The insurer id.
+        data_type: int64
+        data_tests:
+          - not_null                
+      
+      - name: product_id
+        description: The product id.
+        data_type: int64
+        data_tests:
+          - not_null           

@@ -1,0 +1,76 @@
+models:
+  - name: claims_announcement
+    description: Claims Announcement data with basic cleaning and transformation applied, one row per announcement
+    columns:
+      
+      - name: claim_id
+        description: The unique key for each claim announcement.
+        data_type: int64
+        data_tests:
+          - not_null
+      
+      - name: claim_code
+        description: The unique code for each claim announcement.
+        data_type: string
+        data_tests:
+          - not_null
+      
+      - name: policy_id
+        description: The policy id for each claim.
+        data_type: int64
+        data_tests:
+          - not_null         
+      
+      - name: policy_code
+        description: The policy code for each claim.
+        data_type: string
+        data_tests:
+          - not_null
+      
+      - name: announcement_date
+        description: The date incident was reported.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: event_date
+        description: The date incident occure.
+        data_type: date
+        data_tests:
+          - not_null
+      
+      - name: closing_date
+        description: > 
+          The date claim transaction was completed and closed. 
+          closing_date may be NULL when the process is still in progress.
+        data_type: date
+        
+      
+      - name: last_forecast_amount
+        description: The amount reserve for claim.
+        data_type: float64
+        data_tests:
+          - not_null           
+      
+      - name: broker_id
+        description: The foreign key to brokers.
+        data_type: int64
+        data_tests:
+          - not_null 
+                
+      - name: insured_id
+        description: The foreign key to participants.
+        data_type: int64
+        data_tests:
+          - not_null              
+      
+      - name: product_id
+        description: The foreign key to products
+        data_type: int64
+        data_tests:
+          - not_null 
+          # - relationships:
+          #     arguments:
+          #       to: ref('products')
+          #       field: product_id
+                

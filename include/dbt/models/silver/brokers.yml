@@ -1,0 +1,40 @@
+models:
+  
+  - name: brokers
+    description: Brokers data with basic cleaning and transformation applied, one row per broker
+    columns:
+      
+      - name: broker_id
+        description: The unique key for each broker.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: broker_code
+        description: The broker code each broker.
+        data_tests:
+          - not_null
+      
+      - name: broker_fullname
+        description: The broker's full name.
+        data_tests:
+          - not_null         
+      
+      - name: distribution_network
+        description: The broker distribution network.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Bancassurance', 'Brokers']
+      
+      - name: distribution_channel
+        description: The broker distribution channel.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Bank Branches', 'Headquarters', 'Web banking', 'CDW', 'CSU']
+      
+      - name: commission_scheme
+        description: The commission scheme for each broker.
+        data_tests:
+          - not_null

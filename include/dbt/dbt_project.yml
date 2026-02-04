@@ -1,0 +1,32 @@
+name: gcp_insurance_claim
+
+profile: gcp_insurance_claim # Put your profile here
+
+
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# vars:
+  # "dbt_date:time_zone": "America/Los_Angeles"
+
+models:
+  gcp_insurance_claim:
+    silver:
+      +schema: "silver"
+      +materialized: view
+      +tags: ["silver"]   
+
+    # gold:
+    #   +schema: ic_{{ target.name }}_gold
+    #   +materialized: view 
+    #   +tags: ["gold"]

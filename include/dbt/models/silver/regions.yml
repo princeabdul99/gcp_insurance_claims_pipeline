@@ -1,0 +1,83 @@
+models:
+  - name: regions
+    description: Region data with basic cleaning and transformation applied, one row region.
+    columns:
+      
+      - name: id
+        description: The unique key for each state.
+        data_tests:
+          - not_null
+          - unique
+      
+      - name: name
+        description: The name for each region.
+        data_tests:
+          - not_null
+      
+      - name: county
+        description: The county for each region.
+        data_tests:
+          - not_null
+      
+      - name: state_code
+        description: The state_code for each region.
+        data_tests:
+          - not_null  
+      
+      - name: state
+        description: The state for each region.
+        data_tests:
+          - not_null
+      
+      - name: type
+        description: The type (city, town, CDP) region.
+        data_tests:
+          - not_null
+      
+      - name: latitude
+        description: The latitude coordinate for each region.
+        data_tests:
+          - not_null
+      
+      - name: longitude
+        description: The longitude for each region.
+        data_tests:
+          - not_null
+      
+      - name: area_code
+        description: The area_code for each region.
+        data_tests:
+          - not_null          
+      
+      - name: population
+        description: The population for each region.
+        data_tests:
+          - not_null
+      
+      - name: households
+        description: The households for each region.
+        data_tests:
+          - not_null
+      
+      - name: median_income
+        description: The median_income for each region.
+        data_tests:
+          - not_null
+      
+      - name: land_area
+        description: The land_area for each region.
+        data_tests:
+          - not_null
+      
+      - name: water_area
+        description: The water_area for each region.
+        data_tests:
+          - not_null
+      
+      - name: time_zone
+        description: The time_zone for each region.
+        data_tests:
+          - not_null
+
+
+
