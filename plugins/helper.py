@@ -18,3 +18,7 @@ def execute_sql(sql_tbl_path:str):
         create_ext_tbl_sql = file.read()
 
     return create_ext_tbl_sql
+
+
+PATH_TO_DATA_SCRIPT = "/usr/local/airflow/include/ingestion/bronze_ext_tbl.sql"
+dev_bronze_ext_table = execute_sql(f"{PATH_TO_DATA_SCRIPT}")
