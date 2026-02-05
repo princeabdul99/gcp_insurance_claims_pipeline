@@ -5,3 +5,5 @@ docs.md
 logs/
 keys/
 __pycache__
+profiles.yml
+.user.yml
