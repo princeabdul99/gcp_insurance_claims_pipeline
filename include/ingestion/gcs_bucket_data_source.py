@@ -2,8 +2,6 @@ import os
 from airflow.models import Variable
 from include.dbt.cosmos_config import target_env
 
-
-
 # Environment Variables
 GCP_PROJECT_ID = os.getenv('PROJECT_ID')
 
