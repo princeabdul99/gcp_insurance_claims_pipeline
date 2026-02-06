@@ -9,7 +9,7 @@ from include.ingestion.dev_main import dev_main
 from include.ingestion import gcs_bucket_data_source as ds_gcs
 from include.ingestion.bigquery_datasets import create_bq_dataset
 from plugins.helper import dev_bronze_ext_table
-from include.dbt.cosmos_config import DBT_PROJECT_CONFIG, DBT_PROFILE_CONFIG
+from include.dbt.cosmos_config import target_env, DBT_PROJECT_CONFIG, DBT_PROFILE_CONFIG
 from cosmos.airflow.task_group import DbtTaskGroup
 from cosmos.constants import LoadMode
 from cosmos import RenderConfig
@@ -22,8 +22,10 @@ from cosmos import RenderConfig
 GCP_PROJECT_ID = os.getenv('PROJECT_ID')
 
 
+
 # Dataset
-dev_datasets = ['ic_dev_bronze', 'ic_dev_silver', 'ic_dev_gold']
+# dev_datasets = ['ic_dev_bronze', 'ic_dev_silver', 'ic_dev_gold']
+dev_datasets = [f"ic_{target_env}_bronze", f"ic_{target_env}_silver", f"ic_{target_env}_gold"]
 location = 'US'
 
 # External Source Data
@@ -59,8 +61,8 @@ args = {
 def insurance_claims_pipeline():
 
     # INGEST DATA FROM EXTERNAL SOURCE TO GCS BUCKET
-    external_file_to_gcs = PythonOperator.partial(
-        task_id = "external_file_to_gcs",
+    external_file_to_gcs_dev = PythonOperator.partial(
+        task_id = "external_file_to_gcs_dev",
         python_callable=dev_main,
     ).expand(
         op_kwargs=[{"source_filepath": p} for p in SOURCE_FILEPATHS]
@@ -297,7 +299,7 @@ def insurance_claims_pipeline():
     # )
 
 
-    external_file_to_gcs >> create_datasets 
+    external_file_to_gcs_dev >> create_datasets 
     [create_datasets] >> gcs_to_bq_bronze_brokers_ext_tbl
     [create_datasets] >> gcs_to_bq_bronze_coverages_ext_tbl
     [create_datasets] >> gcs_to_bq_bronze_participants_ext_tbl
