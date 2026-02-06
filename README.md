@@ -37,10 +37,14 @@ A **Decision Management System** that converts claims, policy, reserve, and paym
 
 Technical Implementation
 =========================
+
+### Development Lifecycle
+
 ![image_alt](https://github.com/princeabdul99/gcp_insurance_claims_pipeline/blob/1810a7608e62655720ef17aeda2ece1b23a2523b/docs/adlc.png)
 
 
-### Architecture
+### High Level Architecture
+
 ![image_alt](https://github.com/princeabdul99/gcp_insurance_claims_pipeline/blob/c94c214a56cb714bc55ef3124e1f4dae43b9fd67/docs/architecture.png)
 The architecture follows a layered design:
 
