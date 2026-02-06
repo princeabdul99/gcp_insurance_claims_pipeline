@@ -41,7 +41,7 @@ Technical Implementation
 
 
 ### Architecture
-![image_alt]()
+![image_alt](https://github.com/princeabdul99/gcp_insurance_claims_pipeline/blob/c94c214a56cb714bc55ef3124e1f4dae43b9fd67/docs/architecture.png)
 The architecture follows a layered design:
 
 - **Bronze**: Raw claim, policy, payment, and reserve events
