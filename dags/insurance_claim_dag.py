@@ -280,7 +280,14 @@ def insurance_claims_pipeline():
         task_id='dbt_bronze_to_silver',
         bash_command="dbt run --select tag:silver",
         cwd="/usr/local/airflow/include/dbt"
-    )    
+    )
+
+    dbt_silver_to_gold = BashOperator(
+        task_id='dbt_silver_to_gold',
+        bash_command="dbt run --select tag:gold",
+        cwd="/usr/local/airflow/include/dbt"
+    )
+    
 
     # dbt_bronze_to_silver = DbtTaskGroup(
     #     group_id="dbt_bronze_to_silver",
@@ -298,6 +305,88 @@ def insurance_claims_pipeline():
     #     },
     # )
 
+    ######## BQ Row Count Checker
+    bq_row_count_check_on_silver_brokers = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_brokers',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_brokers_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_coverages = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_coverages',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_coverages_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_participants = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_participants',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_participants_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_policies = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_policies',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_policies_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_products = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_products',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_products_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_regions = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_regions',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_regions_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_state_regions = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_state_regions',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_state_regions_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_claims_announcement = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_claims_announcement',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_claims_announcement_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_claims_payment = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_claims_payment',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_claims_payment_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_silver_claims_reserves = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_silver_claims_reserves',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_silver_dataset}.{ds_gcs.bq_claims_reserves_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    ######### END Row Checker
 
     external_file_to_gcs_dev >> create_datasets 
     [create_datasets] >> gcs_to_bq_bronze_brokers_ext_tbl
@@ -325,8 +414,33 @@ def insurance_claims_pipeline():
     
     bronze_tasks >> dbt_test_raw >> dbt_bronze_to_silver
 
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_brokers
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_coverages
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_participants
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_policies
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_products
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_regions
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_state_regions
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_claims_announcement
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_claims_payment
+    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_claims_reserves
 
-insurance_claims_pipeline()    
+    silver_table_check = [
+        bq_row_count_check_on_silver_brokers
+        ,bq_row_count_check_on_silver_coverages
+        ,bq_row_count_check_on_silver_participants
+        ,bq_row_count_check_on_silver_policies
+        ,bq_row_count_check_on_silver_products
+        ,bq_row_count_check_on_silver_regions
+        ,bq_row_count_check_on_silver_state_regions
+        ,bq_row_count_check_on_silver_claims_announcement
+        ,bq_row_count_check_on_silver_claims_payment
+        ,bq_row_count_check_on_silver_claims_reserves        
+    ]
+
+    silver_table_check >> dbt_silver_to_gold
+
+insurance_claims_pipeline()
 
 
 
