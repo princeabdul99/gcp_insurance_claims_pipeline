@@ -11,7 +11,7 @@ settings = Variable.get("insurance_claims_dag_settings", deserialize_json=True)
 # DAG Variables
 gcs_source_data_bucket = settings['gcs_source_data_bucket']
 bq_bronze_dataset = settings['dev_bronze_dataset']
-# bq_silver_dataset = settings['dev_silver_dataset']
+bq_silver_dataset = settings['dev_silver_dataset']
 # bq_gold_dataset = settings['dev_gold_dataset']       
 
 # ==== BROKER DATA ========
