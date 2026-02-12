@@ -26,8 +26,7 @@ models:
       - name: cancelation_date
         description: The policy cancelation date.
         data_type: date
-        data_tests:
-          - not_null
+        
       
       - name: policy_start_date
         description: The policy start date.

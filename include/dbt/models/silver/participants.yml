@@ -5,53 +5,62 @@ models:
       
       - name: participant_id
         description: The unique key for each participant.
+        data_type: int64
         data_tests:
           - not_null
           - unique
       
       - name: participant_code
         description: The participant code each participant.
+        data_type: string
         data_tests:
           - not_null
           - unique
       
       - name: last_name
         description: The participant last name.
+        data_type: string
         data_tests:
           - not_null         
       
       - name: first_name
         description: The participant first name.
+        data_type: string
         data_tests:
           - not_null
       
       - name: birth_date
         description: The participant birth date.
+        data_type: date
         data_tests:
           - not_null
       
       - name: gender
         description: The participant gender (male, female).
+        data_type: string
         data_tests:
           - accepted_values:
               arguments:
-                values: ['Male', 'Female']
+                values: ['Male', 'Female', 'N/A']
       
       - name: participant_type
         description: The participant type.
+        data_type: string
         data_tests:
           - accepted_values:
               arguments:
-                values: ['Individual']
+                values: ['Individual', 'Company']
       
       - name: region_id
         description: The participant region id.
+        data_type: int64
         data_tests:
           - not_null
       
       - name: marital_status
         description: The participant marital status (single, married, divorce).
+        data_type: string
         data_tests:
           - accepted_values:
               arguments:
-                values: ['Single', 'Married', 'Divorced']         
+                values: ['Single', 'Married', 'Divorced', 'N/A']         

@@ -3,6 +3,7 @@ version: 2
 sources:
   - name: ic_bronze
     database: ecom-pipeline-gcp
+    # schema: "ic_dev_bronze"
     schema: "{{ target.schema }}_bronze"  # <-- this will be ic_dev_bronze, etc. 
     description: Insurance claims data for a Fictional Insurance Company
     tables:

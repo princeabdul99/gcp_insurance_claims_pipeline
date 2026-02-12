@@ -6,6 +6,7 @@ models:
       
       - name: broker_id
         description: The unique key for each broker.
+        data_type: int64
         data_tests:
           - not_null
           - unique
@@ -14,27 +15,32 @@ models:
         description: The broker code each broker.
         data_tests:
           - not_null
+          - unique
       
       - name: broker_fullname
         description: The broker's full name.
+        data_type: string
         data_tests:
           - not_null         
       
       - name: distribution_network
         description: The broker distribution network.
+        data_type: string
         data_tests:
           - accepted_values:
               arguments:
-                values: ['Bancassurance', 'Brokers']
+                values: ['Bancassurance', 'Brokers','Direct','N/A']
       
       - name: distribution_channel
         description: The broker distribution channel.
+        data_type: string
         data_tests:
           - accepted_values:
               arguments:
-                values: ['Bank Branches', 'Headquarters', 'Web banking', 'CDW', 'CSU']
+                values: ['Bank Branches', 'Headquarters', 'Web banking', 'CDW', 'CSU','BRU','MKG','Tele sales', 'XPA']
       
       - name: commission_scheme
         description: The commission scheme for each broker.
+        data_type: string
         data_tests:
           - not_null

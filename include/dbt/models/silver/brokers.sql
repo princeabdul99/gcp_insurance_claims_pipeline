@@ -5,17 +5,22 @@ with source as (
 ),
 renamed as (
 
-    select
-        brokerid as broker_id,
-        brokercode as broker_code,
-        brokerfullname as broker_fullname,
-        distributionnetwork as distribution_network,
-        distributionchannel as distribution_channel,
-        COALESCE( commissionscheme, 'N/A') as commission_scheme
+    SELECT
+        SAFE_CAST(
+            SAFE_CAST(brokerid AS FLOAT64)
+            AS INT64
+        ) AS broker_id,
+        brokercode AS broker_code,
+        brokerfullname AS broker_fullname,
+        COALESCE( distributionnetwork, 'N/A') AS distribution_network,
+        distributionchannel AS distribution_channel,
+        COALESCE( commissionscheme, 'N/A') AS commission_scheme,
+        ROW_NUMBER() OVER(PARTITION BY brokerid) AS rn
 
-    from source
+    FROM source
+    WHERE brokerid IS NOT NULL
+),
 
-)
 
 -- quality_check as (
 --     SELECT
@@ -25,5 +30,18 @@ renamed as (
 --     FROM renamed
 -- )
 
-select * from renamed 
+final as (
+
+    select
+        broker_id,
+        broker_code,
+        broker_fullname,
+        distribution_network,
+        distribution_channel,
+        commission_scheme
+    from renamed
+    where rn = 1
+)
+
+select * from final
 

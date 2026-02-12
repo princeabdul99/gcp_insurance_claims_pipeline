@@ -15,11 +15,11 @@ renamed as (
         participation,
         productcategory as product_category,
         premiummode as premium_mode,
-        productdistribution as product_distribution
+        productdistribution as product_distribution,
+        ROW_NUMBER() OVER(PARTITION BY coverid) AS rn
 
     from source
-
-)
+),
 
 -- quality_check as (
 --     SELECT
@@ -27,6 +27,22 @@ renamed as (
 --         COUNT(DISTINCT cover_id) AS unique_id,
 --         SUM(CASE WHEN cover_id IS NULL THEN 1 ELSE 0 END) AS null_ids
 --     FROM renamed
--- )
+-- ),
 
-select * from renamed
+final as (
+
+    SELECT
+        cover_id,
+        cover_code,
+        renewal_type,
+        room,
+        participation,
+        product_category,
+        premium_mode,
+        product_distribution
+
+    FROM renamed
+    where rn = 1
+)
+
+select * from final

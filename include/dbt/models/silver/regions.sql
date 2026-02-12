@@ -7,7 +7,37 @@ with source as (
 renamed as (
 
     select
-        id,
+        id as region_id,
+        name,
+        county,
+        state_code,
+        state,
+        type,
+        latitude,
+        longitude,
+        area_code,
+        population,
+        households,
+        median_income,
+        land_area,
+        water_area,
+        time_zone,
+        ROW_NUMBER() OVER(PARTITION BY id) AS rn
+    from source
+),
+
+quality_check as (
+    SELECT
+        COUNT(*) AS total_rows,
+        -- COUNT(DISTINCT region_id) AS unique_id,
+        SUM(CASE WHEN state IS NULL THEN 1 ELSE 0 END) AS null_ids
+    FROM renamed
+),
+
+final as (
+
+    SELECT
+        region_id,
         name,
         county,
         state_code,
@@ -23,15 +53,8 @@ renamed as (
         water_area,
         time_zone
 
-    from source
+    FROM renamed
+    where rn = 1
 )
 
--- quality_check as (
---     SELECT
---         COUNT(*) AS total_rows,
---         COUNT(DISTINCT longitude) AS unique_id,
---         SUM(CASE WHEN longitude IS NULL THEN 1 ELSE 0 END) AS null_ids
---     FROM renamed
--- )
-
-select * from renamed
+select * from final
