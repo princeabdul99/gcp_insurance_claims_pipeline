@@ -1,0 +1,11 @@
+[
+	{"name": "ParticipantID","type": "INTEGER","mode": "REQUIRED"},
+	{"name": "ParticipantCode","type": "STRING","mode": "REQUIRED"},
+	{"name": "LastName","type": "STRING","mode": "NULLABLE"},
+	{"name": "FirstName","type": "STRING","mode": "NULLABLE"},
+	{"name": "BirthDate","type": "DATE","mode": "NULLABLE"},
+	{"name": "Gender","type": "STRING","mode": "NULLABLE"},
+    {"name": "ParticipantType","type": "STRING","mode": "NULLABLE"},
+    {"name": "RegionID","type": "INTEGER","mode": "NULLABLE"},
+    {"name": "MaritalStatus","type": "STRING","mode": "NULLABLE"}
+]

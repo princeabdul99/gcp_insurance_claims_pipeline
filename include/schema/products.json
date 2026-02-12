@@ -1,0 +1,6 @@
+[
+	{"name": "ProductID","type": "INTEGER","mode": "REQUIRED"},
+	{"name": "ProductCategory","type": "STRING","mode": "REQUIRED"},
+	{"name": "ProductSubCategory","type": "STRING","mode": "REQUIRED"},
+	{"name": "Product","type": "STRING","mode": "REQUIRED"}
+]

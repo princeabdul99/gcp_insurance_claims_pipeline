@@ -1,0 +1,17 @@
+[
+	{"name": "ClaimID","type": "INTEGER","mode": "REQUIRED"},
+	{"name": "ClaimCode","type": "STRING","mode": "REQUIRED"},
+	{"name": "PolicyID","type": "INTEGER","mode": "NULLABLE"},
+	
+	{"name": "AnnouncementDate","type": "DATE","mode": "NULLABLE"},
+	{"name": "ClosingDate","type": "DATE","mode": "NULLABLE"},
+
+    {"name": "CoverID","type": "INTEGER","mode": "NULLABLE"},
+    
+    {"name": "ProvisionAmount","type": "FLOAT","mode": "NULLABLE"},
+    {"name": "ProvisionDate","type": "DATE","mode": "NULLABLE"},
+
+    {"name": "BrokerID","type": "INTEGER","mode": "NULLABLE"},
+    {"name": "InsuredID","type": "INTEGER","mode": "NULLABLE"},
+    {"name": "ProductID", "type": "INTEGER","mode": "NULLABLE"}
+]

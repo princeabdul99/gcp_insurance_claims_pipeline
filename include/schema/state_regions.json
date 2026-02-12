@@ -1,0 +1,5 @@
+[
+	{"name": "StateCode","type": "STRING","mode": "NULLABLE"},
+	{"name": "State","type": "STRING","mode": "NULLABLE"}, 
+	{"name": "Region","type": "STRING","mode": "NULLABLE"}      
+]

@@ -1,0 +1,10 @@
+[
+	{"name": "CoverID","type": "INTEGER","mode": "REQUIRED"},
+	{"name": "CoverCode","type": "STRING","mode": "REQUIRED"},
+	{"name": "RenewalType","type": "STRING","mode": "NULLABLE"},
+	{"name": "Room","type": "STRING","mode": "NULLABLE"},
+	{"name": "Participation","type": "INTEGER","mode": "NULLABLE"},
+	{"name": "ProductCategory","type": "STRING","mode": "NULLABLE"},
+    {"name": "PremiumMode","type": "STRING","mode": "NULLABLE"},
+    {"name": "ProductDistribution","type": "STRING","mode": "NULLABLE"}
+]

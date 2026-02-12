@@ -1,0 +1,8 @@
+[
+	{"name": "BrokerID","type": "STRING","mode": "NULLABLE"},
+	{"name": "BrokerCode","type": "STRING","mode": "NULLABLE"},
+	{"name": "BrokerFullName","type": "STRING","mode": "NULLABLE"},
+	{"name": "DistributionNetwork","type": "STRING","mode": "NULLABLE"},
+	{"name": "DistributionChannel","type": "STRING","mode": "NULLABLE"},
+	{"name": "CommissionScheme","type": "STRING","mode": "NULLABLE"}
+]

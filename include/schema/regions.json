@@ -1,0 +1,20 @@
+[
+	{"name": "id","type": "INTEGER","mode": "REQUIRED"},
+	{"name": "name","type": "STRING","mode": "REQUIRED"},
+
+	{"name": "county","type": "STRING","mode": "NULLABLE"},
+	{"name": "state_code","type": "STRING","mode": "NULLABLE"},
+	{"name": "state","type": "STRING","mode": "NULLABLE"},
+	{"name": "type","type": "STRING","mode": "NULLABLE"},
+
+    {"name": "latitude","type": "FLOAT","mode": "NULLABLE"},
+    {"name": "longitude","type": "FLOAT","mode": "NULLABLE"},
+    {"name": "area_code","type": "INTEGER","mode": "NULLABLE"},
+
+    {"name": "population","type": "INTEGER","mode": "NULLABLE"},
+    {"name": "households","type": "INTEGER","mode": "NULLABLE"},
+    {"name": "median_income","type": "INTEGER","mode": "NULLABLE"},
+    {"name": "land_area", "type": "INTEGER","mode": "NULLABLE"},
+    {"name": "water_area", "type": "INTEGER","mode": "NULLABLE"},
+    {"name": "time_zone","type": "STRING","mode": "NULLABLE"}
+]
