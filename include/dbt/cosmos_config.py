@@ -14,7 +14,7 @@ DBT_PROFILES_PATH = f"{BASE_PATH}/dbt/profiles.yml"
 
 
 # Environment (dev/prod)
-target_env = 'dev'
+target_env = os.getenv('TARGET_ENV')
 
 # Dbt config
 DBT_PROJECT_CONFIG = ProjectConfig(

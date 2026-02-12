@@ -4,6 +4,7 @@ from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.standard.operators.python import PythonOperator
 
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator, BigQueryCheckOperator
+from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator 
 from pendulum import datetime
 from include.ingestion.dev_main import dev_main
 from include.ingestion import gcs_bucket_data_source as ds_gcs
@@ -15,11 +16,9 @@ from cosmos.constants import LoadMode
 from cosmos import RenderConfig
 
 
-
-
-
 # Environment Variables
 GCP_PROJECT_ID = os.getenv('PROJECT_ID')
+GCS_BUCKET_NAME = os.getenv('BUCKET_NAME')
 
 
 
@@ -80,195 +79,400 @@ def insurance_claims_pipeline():
     
     # LOAD BQ BRONZE LAYER FROM GCS BUCKET 
     ### -- Brokers data ----
-    gcs_to_bq_bronze_brokers_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_brokers_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_brokers_table_name,
-            "gcs_uri": ds_gcs.gcs_brokers_source_url,
-            "skip_leading_rows": 1
-        }
-    ) 
+
+    # gcs_to_bq_bronze_brokers_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_brokers_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_brokers_table_name,
+    #         "gcs_uri": ds_gcs.gcs_brokers_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # ) 
+
+    gcs_to_bq_bronze_brokers = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_brokers",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_brokers_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_brokers_table_id,
+        schema_fields = ds_gcs.brokers_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )
 
     ### -- Coverages data ----
-    gcs_to_bq_bronze_coverages_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_coverages_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_coverages_table_name,
-            "gcs_uri": ds_gcs.gcs_coverages_source_url,
-            "skip_leading_rows": 1
-        }
-    ) 
+    # gcs_to_bq_bronze_coverages_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_coverages_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_coverages_table_name,
+    #         "gcs_uri": ds_gcs.gcs_coverages_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # ) 
+
+    gcs_to_bq_bronze_coverages = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_coverages",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_coverages_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_coverages_table_id,
+        schema_fields = ds_gcs.coverages_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )    
 
     ### -- Participant data ----
-    gcs_to_bq_bronze_participants_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_participants_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_participants_table_name,
-            "gcs_uri": ds_gcs.gcs_participants_source_url,
-            "skip_leading_rows": 1
-        }
-    ) 
+    # gcs_to_bq_bronze_participants_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_participants_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_participants_table_name,
+    #         "gcs_uri": ds_gcs.gcs_participants_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )
+
+    gcs_to_bq_bronze_participants = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_participants",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_participants_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_participants_table_id,
+        schema_fields = ds_gcs.participants_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )
 
     ### -- Policy data ----
-    gcs_to_bq_bronze_policies_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_policies_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_policies_table_name,
-            "gcs_uri": ds_gcs.gcs_policies_source_url,
-            "skip_leading_rows": 1
-        }
-    )     
+    # gcs_to_bq_bronze_policies_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_policies_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_policies_table_name,
+    #         "gcs_uri": ds_gcs.gcs_policies_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )
+
+    gcs_to_bq_bronze_policies = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_policies",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_policies_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_policies_table_id,
+        schema_fields = ds_gcs.policies_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )    
 
     ### -- Products data ----
-    gcs_to_bq_bronze_products_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_products_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_products_table_name,
-            "gcs_uri": ds_gcs.gcs_products_source_url,
-            "skip_leading_rows": 1
-        }
-    )     
+    # gcs_to_bq_bronze_products_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_products_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_products_table_name,
+    #         "gcs_uri": ds_gcs.gcs_products_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )
+
+    gcs_to_bq_bronze_products = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_products",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_products_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_products_table_id,
+        schema_fields = ds_gcs.products_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )    
 
     ### -- Regions data ----
-    gcs_to_bq_bronze_regions_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_regions_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_regions_table_name,
-            "gcs_uri": ds_gcs.gcs_regions_source_url,
-            "skip_leading_rows": 1
-        }
-    ) 
+    # gcs_to_bq_bronze_regions_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_regions_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_regions_table_name,
+    #         "gcs_uri": ds_gcs.gcs_regions_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )
+
+    gcs_to_bq_bronze_regions = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_regions",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_regions_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_regions_table_id,
+        schema_fields = ds_gcs.regions_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )
 
     ### -- State Regions data ----
-    gcs_to_bq_bronze_state_regions_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_state_regions_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_state_regions_table_name,
-            "gcs_uri": ds_gcs.gcs_state_regions_source_url,
-            "skip_leading_rows": 1
-        }
+    # gcs_to_bq_bronze_state_regions_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_state_regions_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_state_regions_table_name,
+    #         "gcs_uri": ds_gcs.gcs_state_regions_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )
+
+    gcs_to_bq_bronze_state_regions = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_state_regions",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_state_regions_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_state_regions_table_id,
+        schema_fields = ds_gcs.state_regions_schema,
+        write_disposition='WRITE_TRUNCATE'
     ) 
 
     ### -- Claims Announcements data ----
-    gcs_to_bq_bronze_claims_announcement_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_claims_announcement_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_claims_announcement_table_name,
-            "gcs_uri": ds_gcs.gcs_claims_announcement_source_url,
-            "skip_leading_rows": 1
-        }
-    )   
+    # gcs_to_bq_bronze_claims_announcement_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_claims_announcement_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_claims_announcement_table_name,
+    #         "gcs_uri": ds_gcs.gcs_claims_announcement_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )  
+
+    gcs_to_bq_bronze_claims_announcement = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_claims_announcement",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_claims_announcement_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_claims_announcement_table_id,
+        schema_fields = ds_gcs.claims_announcement_schema,
+        write_disposition='WRITE_TRUNCATE'
+    ) 
 
     ### -- Claims Payment data ----
-    gcs_to_bq_bronze_claims_payment_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_claims_payment_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_claims_payment_table_name,
-            "gcs_uri": ds_gcs.gcs_claims_payment_source_url,
-            "skip_leading_rows": 1
-        }
-    )          
+    # gcs_to_bq_bronze_claims_payment_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_claims_payment_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_claims_payment_table_name,
+    #         "gcs_uri": ds_gcs.gcs_claims_payment_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # ) 
+
+    gcs_to_bq_bronze_claims_payment = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_claims_payment",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_claims_payment_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_claims_payment_table_id,
+        schema_fields = ds_gcs.claims_payment_schema,
+        write_disposition='WRITE_TRUNCATE'
+    )         
 
     ### -- Claims Reserve data ----
-    gcs_to_bq_bronze_claims_reserves_ext_tbl = BigQueryInsertJobOperator(
-        task_id = "gcs_to_bq_bronze_claims_reserves_ext_tbl",
-        project_id = GCP_PROJECT_ID,
-        configuration={
-            "query": {
-                "query": dev_bronze_ext_table,
-                "useLegacySql": False
-            }
-        },
-        params={
-            "project_id": GCP_PROJECT_ID,
-            "dataset": ds_gcs.bq_bronze_dataset,
-            "table_name": ds_gcs.bq_claims_reserves_table_name,
-            "gcs_uri": ds_gcs.gcs_claims_reserves_source_url,
-            "skip_leading_rows": 1
-        }
-    )  
+    # gcs_to_bq_bronze_claims_reserves_ext_tbl = BigQueryInsertJobOperator(
+    #     task_id = "gcs_to_bq_bronze_claims_reserves_ext_tbl",
+    #     project_id = GCP_PROJECT_ID,
+    #     configuration={
+    #         "query": {
+    #             "query": dev_bronze_ext_table,
+    #             "useLegacySql": False
+    #         }
+    #     },
+    #     params={
+    #         "project_id": GCP_PROJECT_ID,
+    #         "dataset": ds_gcs.bq_bronze_dataset,
+    #         "table_name": ds_gcs.bq_claims_reserves_table_name,
+    #         "gcs_uri": ds_gcs.gcs_claims_reserves_source_url,
+    #         "skip_leading_rows": 1
+    #     }
+    # )
+
+    gcs_to_bq_bronze_claims_reserves = GCSToBigQueryOperator(
+        task_id = "gcs_to_bq_bronze_claims_reserves",
+        bucket='{}'.format(GCS_BUCKET_NAME),
+        external_table=True,
+        source_format="CSV",
+        skip_leading_rows=1,
+        source_objects=[ds_gcs.gcs_claims_reserves_source_object],
+        destination_project_dataset_table=ds_gcs.bq_bronze_claims_reserves_table_id,
+        schema_fields = ds_gcs.claims_reserves_schema,
+        write_disposition='WRITE_TRUNCATE'
+    ) 
     ### END LOAD BQ BRONZE LAYER FROM GCS BUCKET <=;
+
+    ######## BQ Bronze Row Count Checker
+    bq_row_count_check_on_bronze_brokers = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_brokers',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_brokers_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_coverages = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_coverages',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_coverages_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_participants = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_participants',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_participants_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_policies = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_policies',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_policies_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_products = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_products',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_products_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_regions = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_regions',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_regions_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_state_regions = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_state_regions',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_state_regions_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_claims_announcement = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_claims_announcement',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_claims_announcement_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_claims_payment = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_claims_payment',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_claims_payment_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    bq_row_count_check_on_bronze_claims_reserves = BigQueryCheckOperator(
+        task_id='bq_row_count_check_on_bronze_claims_reserves',
+        sql=f"""
+            SELECT COUNT(*) FROM `{GCP_PROJECT_ID}.{ds_gcs.bq_bronze_dataset}.{ds_gcs.bq_claims_reserves_table_name}`
+            """,
+        use_legacy_sql=False,
+    )
+
+    ######### END Bronze Row Checker
+
 
     dbt_test_raw = BashOperator(
         task_id='dbt_test_raw',
@@ -305,7 +509,7 @@ def insurance_claims_pipeline():
     #     },
     # )
 
-    ######## BQ Row Count Checker
+    ######## BQ Silver Row Count Checker
     bq_row_count_check_on_silver_brokers = BigQueryCheckOperator(
         task_id='bq_row_count_check_on_silver_brokers',
         sql=f"""
@@ -389,30 +593,30 @@ def insurance_claims_pipeline():
     ######### END Row Checker
 
     external_file_to_gcs_dev >> create_datasets 
-    [create_datasets] >> gcs_to_bq_bronze_brokers_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_coverages_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_participants_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_policies_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_products_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_regions_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_state_regions_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_claims_announcement_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_claims_payment_ext_tbl
-    [create_datasets] >> gcs_to_bq_bronze_claims_reserves_ext_tbl
+    [create_datasets] >> gcs_to_bq_bronze_brokers >> bq_row_count_check_on_bronze_brokers
+    [create_datasets] >> gcs_to_bq_bronze_coverages >> bq_row_count_check_on_bronze_coverages
+    [create_datasets] >> gcs_to_bq_bronze_participants >> bq_row_count_check_on_bronze_participants
+    [create_datasets] >> gcs_to_bq_bronze_policies >> bq_row_count_check_on_bronze_policies
+    [create_datasets] >> gcs_to_bq_bronze_products >> bq_row_count_check_on_bronze_products
+    [create_datasets] >> gcs_to_bq_bronze_regions >> bq_row_count_check_on_bronze_regions
+    [create_datasets] >> gcs_to_bq_bronze_state_regions >> bq_row_count_check_on_bronze_state_regions
+    [create_datasets] >> gcs_to_bq_bronze_claims_announcement >> bq_row_count_check_on_bronze_claims_announcement
+    [create_datasets] >> gcs_to_bq_bronze_claims_payment >> bq_row_count_check_on_bronze_claims_payment
+    [create_datasets] >> gcs_to_bq_bronze_claims_reserves >> bq_row_count_check_on_bronze_claims_reserves
 
-    bronze_tasks = [
-    gcs_to_bq_bronze_brokers_ext_tbl
-   ,gcs_to_bq_bronze_coverages_ext_tbl
-   ,gcs_to_bq_bronze_participants_ext_tbl
-   ,gcs_to_bq_bronze_policies_ext_tbl
-   ,gcs_to_bq_bronze_products_ext_tbl
-   ,gcs_to_bq_bronze_regions_ext_tbl
-   ,gcs_to_bq_bronze_state_regions_ext_tbl
-   ,gcs_to_bq_bronze_claims_announcement_ext_tbl
-   ,gcs_to_bq_bronze_claims_payment_ext_tbl
-   ,gcs_to_bq_bronze_claims_reserves_ext_tbl] 
+    bronze_tasks_check = [
+    bq_row_count_check_on_bronze_brokers
+   ,bq_row_count_check_on_bronze_coverages
+   ,bq_row_count_check_on_bronze_participants
+   ,bq_row_count_check_on_bronze_policies
+   ,bq_row_count_check_on_bronze_products
+   ,bq_row_count_check_on_bronze_regions
+   ,bq_row_count_check_on_bronze_state_regions
+   ,bq_row_count_check_on_bronze_claims_announcement
+   ,bq_row_count_check_on_bronze_claims_payment
+   ,bq_row_count_check_on_bronze_claims_reserves] 
     
-    bronze_tasks >> dbt_test_raw >> dbt_bronze_to_silver
+    bronze_tasks_check >> dbt_test_raw >> dbt_bronze_to_silver
 
     [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_brokers
     [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_coverages

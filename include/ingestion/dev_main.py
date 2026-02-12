@@ -29,7 +29,7 @@ def dev_main(source_filepath: str, base_prefix:str = "dev"):
         gcs_object_path = f"{base_prefix.rstrip('/')}/{folder_name.rstrip('/')}/{filename}"
 
         # Read CSV into panda and convert datafram back to CSV
-        df = pd.read_csv(source_filepath, nrows=100)
+        df = pd.read_csv(source_filepath, nrows=1000)
         buffer = StringIO()
         df.to_csv(buffer, index=False)
         buffer.seek(0)

@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 import os
 import re
+import json
 
 def derive_folder_from_filename(filename: str) -> str:
     name = os.path.splitext(filename)[0]
@@ -11,6 +12,13 @@ def derive_folder_from_filename(filename: str) -> str:
 def get_filename_from_url(url: str) -> str:
     path = urlparse(url).path
     return os.path.basename(path)
+
+
+def read_json_schema(gcs_file_path):
+    with open(gcs_file_path, "r") as file:
+        schema_json = json.load(file)
+    
+    return schema_json 
 
 
 def execute_sql(sql_tbl_path:str):
