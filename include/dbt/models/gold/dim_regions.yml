@@ -1,0 +1,15 @@
+
+models:
+  
+  - name: dim_regions
+    description: Dimensional regions table that join the state region state
+    columns:
+      
+      - name: state_code
+        description: The unique key for each claim decision.
+        data_type: string
+        data_tests:
+          - relationships:
+              arguments: 
+                to: ref('state_regions')
+                field: state_code

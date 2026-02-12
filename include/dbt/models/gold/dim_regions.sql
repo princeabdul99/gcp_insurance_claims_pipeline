@@ -18,13 +18,13 @@ geo_region as (
 
 final as (
     SELECT
-        id,
+        region_id,
         name,
         county,
-        state_code,
+        geo_region.state_code AS state_code,
         state,
         type,
-        geo_region.state_geo_region,
+        geo_region.state_geo_region AS state_geo_region,
         latitude,
         longitude,
         area_code,
@@ -36,7 +36,8 @@ final as (
         time_zone
 
     FROM source
-    LEFT JOIN geo_region USING (state_code)
+    INNER JOIN geo_region 
+        ON source.state_code = geo_region.state_code
 )
 
 select * from final

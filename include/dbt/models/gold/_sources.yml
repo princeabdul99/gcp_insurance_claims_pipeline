@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: ic_bronze
+    database: ecom-pipeline-gcp
+    # schema: "ic_dev_silver"
+    schema: "{{ target.schema }}_silver"  # <-- this will be ic_dev_silver, etc. 
+    description: Insurance claims data for a Fictional Insurance Company
+    tables:
+      - name: fact_claims_decision
+        description: fact Claims decision data that combines the claims announcement, claims payment, claims reserves and policy table. one row per claim
+
+      - name: dim_brokers
+        description: One record per broker dimension 
+      
+      - name: fact_claims_announcement
+        description:  One record per announcement (consisting of one or more claims announcement) fact    
+      
+      - name: fact_claims_payment
+        description:  One record per payment (consisting of one or more claims payments) fact  
+      
+      - name: fact_claims_reserves
+        description:  One record per reserve (consisting of one or more claims reserves) fact  
+      
+      - name: dim_coverages
+        description: One record per coverage dimension         
+      
+      - name: dim_participants
+        description: One record per person who has a policy dimension          
+      
+      - name: dim_policies
+        description:  One record per policy dimension 
+      
+      - name: dim_products
+        description:  One record per product dimension           
+      
+      - name: dim_regions
+        description:  One record per region dimension 
