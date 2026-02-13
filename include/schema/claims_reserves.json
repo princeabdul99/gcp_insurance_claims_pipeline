@@ -11,7 +11,7 @@
     {"name": "ProvisionAmount","type": "FLOAT","mode": "NULLABLE"},
     {"name": "ProvisionDate","type": "DATE","mode": "NULLABLE"},
 
-    {"name": "BrokerID","type": "INTEGER","mode": "NULLABLE"},
-    {"name": "InsuredID","type": "INTEGER","mode": "NULLABLE"},
-    {"name": "ProductID", "type": "INTEGER","mode": "NULLABLE"}
+    {"name": "BrokerID","type": "STRING","mode": "NULLABLE"},
+    {"name": "InsuredID","type": "STRING","mode": "NULLABLE"},
+    {"name": "ProductID", "type": "STRING","mode": "NULLABLE"}
 ]
