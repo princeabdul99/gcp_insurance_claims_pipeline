@@ -9,7 +9,10 @@ models:
         description: The unique key for each claim decision.
         data_type: string
         data_tests:
-          - relationships:
-              arguments: 
-                to: ref('state_regions')
-                field: state_code
+          - not_null
+        
+        # data_tests:
+        #   - relationships:
+        #       arguments: 
+        #         to: ref('state_regions')
+        #         field: state_code

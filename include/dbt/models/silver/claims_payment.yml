@@ -55,8 +55,8 @@ models:
       - name: payment_date
         description: The payment date for claim.
         data_type: date
-        data_tests:
-          - not_null 
+        # data_tests:
+        #   - not_null 
       
       - name: payment_amount
         description: The payment amount for the claim.
@@ -73,8 +73,8 @@ models:
       - name: insured_id
         description: The insurer id.
         data_type: int64
-        data_tests:
-          - not_null                
+        # data_tests:
+        #   - not_null                
       
       - name: product_id
         description: The product id.

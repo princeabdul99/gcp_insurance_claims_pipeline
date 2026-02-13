@@ -15,7 +15,7 @@ geo_region as (
     FROM state_region
 ),
 
-
+     
 final as (
     SELECT
         region_id,
