@@ -3,17 +3,14 @@ from airflow.sdk import dag
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.standard.operators.python import PythonOperator
 
-from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator, BigQueryCheckOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryCheckOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator 
 from pendulum import datetime
 from include.ingestion.dev_main import dev_main
+from include.ingestion.prod_main import prod_main
 from include.ingestion import gcs_bucket_data_source as ds_gcs
 from include.ingestion.bigquery_datasets import create_bq_dataset
-from plugins.helper import dev_bronze_ext_table
-from include.dbt.cosmos_config import target_env, DBT_PROJECT_CONFIG, DBT_PROFILE_CONFIG
-from cosmos.airflow.task_group import DbtTaskGroup
-from cosmos.constants import LoadMode
-from cosmos import RenderConfig
+from include.dbt.cosmos_config import target_env
 
 
 # Environment Variables
@@ -62,7 +59,7 @@ def insurance_claims_pipeline():
     # INGEST DATA FROM EXTERNAL SOURCE TO GCS BUCKET
     external_file_to_gcs_dev = PythonOperator.partial(
         task_id = "external_file_to_gcs_dev",
-        python_callable=dev_main,
+        python_callable=dev_main if target_env == "dev" else prod_main
     ).expand(
         op_kwargs=[{"source_filepath": p} for p in SOURCE_FILEPATHS]
     )
@@ -473,18 +470,19 @@ def insurance_claims_pipeline():
 
     ######### END Bronze Row Checker
 
-
-    dbt_test_raw = BashOperator(
-        task_id='dbt_test_raw',
-        bash_command="dbt test --select tag:silver",
-        cwd="/usr/local/airflow/include/dbt"
-    )
-
     dbt_bronze_to_silver = BashOperator(
         task_id='dbt_bronze_to_silver',
         bash_command="dbt run --select tag:silver",
         cwd="/usr/local/airflow/include/dbt"
     )
+
+    dbt_test_silver_executed = BashOperator(
+        task_id='dbt_test_silver_executed',
+        bash_command="dbt test --select tag:silver",
+        cwd="/usr/local/airflow/include/dbt"
+    )
+
+    
 
     dbt_silver_to_gold = BashOperator(
         task_id='dbt_silver_to_gold',
@@ -616,18 +614,18 @@ def insurance_claims_pipeline():
    ,bq_row_count_check_on_bronze_claims_payment
    ,bq_row_count_check_on_bronze_claims_reserves] 
     
-    bronze_tasks_check >> dbt_test_raw >> dbt_bronze_to_silver
+    bronze_tasks_check >> dbt_bronze_to_silver >> dbt_test_silver_executed
 
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_brokers
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_coverages
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_participants
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_policies
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_products
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_regions
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_state_regions
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_claims_announcement
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_claims_payment
-    [dbt_bronze_to_silver] >> bq_row_count_check_on_silver_claims_reserves
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_brokers
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_coverages
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_participants
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_policies
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_products
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_regions
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_state_regions
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_claims_announcement
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_claims_payment
+    [dbt_test_silver_executed] >> bq_row_count_check_on_silver_claims_reserves
 
     silver_table_check = [
         bq_row_count_check_on_silver_brokers
